@@ -23,6 +23,7 @@ export default class App extends Component {
     });
   };
   generateID = (todoData) => {
+    if (todoData.length === 0) return 1;
     const arrID = todoData.map((el) => el.id);
     console.log(arrID);
     return Math.max(...arrID) + 1;
