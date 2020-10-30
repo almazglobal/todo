@@ -22,13 +22,16 @@ export default class App extends Component {
       return { todoData: [...before, ...after] };
     });
   };
-
-  addItem = () => {
+  generateID = (todoData) => {
+    const arrID = todoData.map((el) => el.id);
+    console.log(arrID);
+    return Math.max(...arrID) + 1;
+  };
+  addItem = (text) => {
     this.setState(({ todoData }) => {
-      const newArray = [
-        ...todoData,
-        { label: 'New work', important: false, id: 4 },
-      ];
+      const newId = this.generateID(todoData);
+      const newItem = { label: text, important: false, id: newId };
+      const newArray = [...todoData, newItem];
       return {
         todoData: newArray,
       };

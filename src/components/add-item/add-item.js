@@ -12,7 +12,7 @@ const AddItem = ({ onAdd }) => {
       <button
         type="button"
         className="btn btn-outline-secondary"
-        onClick={onAdd}
+        onClick={() => onAdd('New Day!!')}
       >
         Add
       </button>
