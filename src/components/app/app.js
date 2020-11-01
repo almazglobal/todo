@@ -7,12 +7,14 @@ import ItemStatusFilter from '../item-status-filter';
 import './app.css';
 
 export default class App extends Component {
+  data = [
+    { label: 'Drink Coffee', important: false, done: false, id: 1 },
+    { label: 'Make Awesome App', important: true, done: false, id: 2 },
+    { label: 'Have a lunch', important: false, done: false, id: 3 },
+  ];
   state = {
-    todoData: [
-      { label: 'Drink Coffee', important: false, done: false, id: 1 },
-      { label: 'Make Awesome App', important: true, done: false, id: 2 },
-      { label: 'Have a lunch', important: false, done: false, id: 3 },
-    ],
+    todoData: this.data,
+    modeDisplay: 'Done',
   };
   deleteItem = (id) => {
     this.setState(({ todoData }) => {
@@ -67,8 +69,31 @@ export default class App extends Component {
     return arr.reduce((acc, el) => (el.done ? ++acc : acc), 0);
   };
 
+  changeStatus = (modeDisplay) => {
+    this.setState(({ todoData }) => {
+      let newArray;
+      if (modeDisplay === 'All') {
+        newArray = this.data;
+      }
+      if (modeDisplay === 'Active') {
+        newArray = todoData.filter((el) => !el.done);
+      }
+      if (modeDisplay === 'Done') {
+        newArray = todoData.filter((el) => el.done);
+      }
+      return { todoData: newArray };
+    });
+  };
+
+  onChangeStatus = (status) => {
+    this.setState(() => {
+      return { modeDisplay: status };
+    });
+  };
+
   render() {
-    const { todoData } = this.state;
+    const { todoData, modeDisplay } = this.state;
+    this.changeStatus(modeDisplay);
     const done = this.countDone(todoData);
     const toDo = todoData.length - done;
     return (
@@ -76,7 +101,7 @@ export default class App extends Component {
         <AppHeader toDo={toDo} done={done} />
         <div className="top-panel d-flex">
           <SearchPanel />
-          <ItemStatusFilter />
+          <ItemStatusFilter onChangeStatus={this.onChangeStatus} />
         </div>
 
         <TodoList
