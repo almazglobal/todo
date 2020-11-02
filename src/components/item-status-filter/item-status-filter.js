@@ -1,41 +1,25 @@
 import React, { Component } from 'react';
 
 export default class ItemStatusFilter extends Component {
-  state = {
-    statusButtons: [
-      { name: 'All', status: 'btn-info', id: 1 },
-      { name: 'Active', status: 'btn-outline-secondary', id: 2 },
-      { name: 'Done', status: 'btn-outline-secondary', id: 3 },
-    ],
-  };
-
-  changeStatus = (id) => {
-    this.setState(({ statusButtons }) => {
-      const idx = statusButtons.findIndex((el) => el.id === id);
-      const newArray = statusButtons.map((el, ind) => {
-        if (idx === ind) {
-          this.props.onChangeStatus(el.name);
-          return { ...statusButtons[ind], status: 'btn-info' };
-        } else
-          return { ...statusButtons[ind], status: 'btn-outline-secondary' };
-      });
-      return {
-        statusButtons: newArray,
-      };
-    });
-  };
+  buttons = [
+    { name: 'All', label: 'All' },
+    { name: 'Active', label: 'Active' },
+    { name: 'Done', label: 'Done' },
+  ];
 
   render() {
-    const { statusButtons } = this.state;
-    const elements = statusButtons.map((el) => {
+    const { filter, onChangeStatus } = this.props;
+    const elements = this.buttons.map(({ name, label }) => {
+      const isActive = name === filter;
+      const clazz = isActive ? 'btn-info' : 'btn-outline-secondary';
       return (
         <button
           type="button"
-          className={`btn ${el.status}`}
-          key={el.id}
-          onClick={() => this.changeStatus(el.id)}
+          className={`btn ${clazz}`}
+          key={name}
+          onClick={() => onChangeStatus(name)}
         >
-          {el.name}
+          {label}
         </button>
       );
     });

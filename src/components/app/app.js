@@ -7,14 +7,14 @@ import ItemStatusFilter from '../item-status-filter';
 import './app.css';
 
 export default class App extends Component {
-  data = [
-    { label: 'Drink Coffee', important: false, done: false, id: 1 },
-    { label: 'Make Awesome App', important: true, done: false, id: 2 },
-    { label: 'Have a lunch', important: false, done: false, id: 3 },
-  ];
   state = {
-    todoData: this.data,
-    modeDisplay: 'Done',
+    todoData: [
+      { label: 'Drink Coffee', important: false, done: false, id: 1 },
+      { label: 'Make Awesome App', important: true, done: false, id: 2 },
+      { label: 'Have a lunch', important: false, done: false, id: 3 },
+    ],
+    modeDisplay: 'All',
+    term: '',
   };
   deleteItem = (id) => {
     this.setState(({ todoData }) => {
@@ -69,43 +69,52 @@ export default class App extends Component {
     return arr.reduce((acc, el) => (el.done ? ++acc : acc), 0);
   };
 
-  changeStatus = (modeDisplay) => {
-    this.setState(({ todoData }) => {
-      let newArray;
-      if (modeDisplay === 'All') {
-        newArray = this.data;
-      }
-      if (modeDisplay === 'Active') {
-        newArray = todoData.filter((el) => !el.done);
-      }
-      if (modeDisplay === 'Done') {
-        newArray = todoData.filter((el) => el.done);
-      }
-      return { todoData: newArray };
-    });
+  changeStatus = (items, status) => {
+    let newArray;
+    if (status === 'All') {
+      newArray = items;
+    }
+    if (status === 'Active') {
+      newArray = items.filter((el) => !el.done);
+    }
+    if (status === 'Done') {
+      newArray = items.filter((el) => el.done);
+    }
+    return newArray;
   };
 
-  onChangeStatus = (status) => {
-    this.setState(() => {
-      return { modeDisplay: status };
-    });
+  onChangeStatus = (modeDisplay) => {
+    this.setState({ modeDisplay });
   };
 
+  searchItems = (items, text) => {
+    if (!text) return items;
+    return items.filter((el) =>
+      el.label.toLowerCase().includes(text.toLowerCase())
+    );
+  };
+  changeStateTerm = (term) => {
+    this.setState({ term });
+  };
   render() {
-    const { todoData, modeDisplay } = this.state;
-    this.changeStatus(modeDisplay);
+    const { todoData, modeDisplay, term } = this.state;
+    const modeDisplayItems = this.changeStatus(todoData, modeDisplay);
+    const showFilterItems = this.searchItems(modeDisplayItems, term);
     const done = this.countDone(todoData);
     const toDo = todoData.length - done;
     return (
       <div className="todo-app">
         <AppHeader toDo={toDo} done={done} />
         <div className="top-panel d-flex">
-          <SearchPanel />
-          <ItemStatusFilter onChangeStatus={this.onChangeStatus} />
+          <SearchPanel onSearchText={this.changeStateTerm} />
+          <ItemStatusFilter
+            onChangeStatus={this.onChangeStatus}
+            filter={modeDisplay}
+          />
         </div>
 
         <TodoList
-          todos={todoData}
+          todos={showFilterItems}
           onDeleted={this.deleteItem}
           onToggleImportant={this.onToggleImportant}
           onToggleDone={this.onToggleDone}
